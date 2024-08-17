@@ -1,0 +1,121 @@
+1. Definición de la Interfaz IBaseNumber
+
+interface IBaseNumber {
+    val value: Int
+    fun printValue()
+}
+
+---------------------------------------------------------------------------------------------------
+
+2. Clases para Tipos de Números
+Clase PrimeNumber
+
+class PrimeNumber(override val value: Int) : IBaseNumber {
+    override fun printValue() {
+        println("Prime Number: $value")
+    }
+}
+
+---------------------------------------------------------------------------------------------------
+
+Clase OddNumber
+
+class OddNumber(override val value: Int) : IBaseNumber {
+    val divisors: List<Int> = calculateDivisors()
+
+    override fun printValue() {
+        println("Odd Number: $value, Divisors: $divisors")
+    }
+
+    private fun calculateDivisors(): List<Int> {
+        return (1..value).filter { value % it == 0 }
+    }
+}
+
+---------------------------------------------------------------------------------------------------
+
+Clase EvenNumber
+
+class EvenNumber(override val value: Int) : IBaseNumber {
+    val divisors: List<Int> = calculateDivisors()
+
+    override fun printValue() {
+        println("Even Number: $value, Divisors: $divisors")
+    }
+
+    private fun calculateDivisors(): List<Int> {
+        return (1..value).filter { value % it == 0 }
+    }
+}
+
+---------------------------------------------------------------------------------------------------
+
+3. Clase PrimeNumberProcessor
+Esta clase se encarga de recibir un rango de números, clasificarlos y procesarlos.
+
+class PrimeNumberProcessor(private val range: IntRange) {
+
+    data class EvaluationResult(
+        val primes: MutableList<PrimeNumber> = mutableListOf(),
+        val odds: MutableList<OddNumber> = mutableListOf(),
+        val evens: MutableList<EvenNumber> = mutableListOf()
+    )
+
+    private val result = EvaluationResult()
+
+    fun processNumbers() {
+        for (number in range) {
+            when (validateNumber(number)) {
+                NumberType.PRIME -> result.primes.add(PrimeNumber(number))
+                NumberType.ODD -> result.odds.add(OddNumber(number))
+                NumberType.EVEN -> result.evens.add(EvenNumber(number))
+            }
+        }
+        printResults()
+    }
+
+    private fun validateNumber(number: Int): NumberType {
+        return when {
+            isPrime(number) -> NumberType.PRIME
+            number % 2 == 0 -> NumberType.EVEN
+            else -> NumberType.ODD
+        }
+    }
+
+    private fun isPrime(number: Int): Boolean {
+        if (number < 2) return false
+        for (i in 2..Math.sqrt(number.toDouble()).toInt()) {
+            if (number % i == 0) return false
+        }
+        return true
+    }
+
+    private fun printResults() {
+        result.primes.forEach { it.printValue() }
+        result.odds.forEach { it.printValue() }
+        result.evens.forEach { it.printValue() }
+    }
+
+    enum class NumberType {
+        PRIME, ODD, EVEN
+    }
+}
+
+---------------------------------------------------------------------------------------------------
+
+4. Uso del PrimeNumberProcessor
+Puedes usar la clase PrimeNumberProcessor para procesar un rango de números de la siguiente manera:
+
+fun main() {
+    val processor = PrimeNumberProcessor(1..100)
+    processor.processNumbers()
+}
+
+---------------------------------------------------------------------------------------------------
+
+fun main() {
+    val processor = PrimeNumberProcessor(1..100)
+    processor.processNumbers()
+}
+
+---------------------------------------------------------------------------------------------------
